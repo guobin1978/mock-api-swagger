@@ -1,0 +1,29 @@
+{
+  "name": "mock-api-swagger",
+  "version": "1.0.3",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "mas": "./bin/www"
+  },
+  "keywords": [
+    "mock-api-swagger",
+    "swagger",
+    "mock",
+    "api"
+  ],
+  "author": "青天等不等雨",
+  "license": "ISC",
+  "dependencies": {
+    "chokidar": "^3.5.2",
+    "commander": "^8.3.0",
+    "execa": "^5.1.0",
+    "express": "^4.17.2",
+    "inquirer": "^8.2.0",
+    "ora": "^5.4.1",
+    "request": "^2.88.2"
+  }
+}
