@@ -1,0 +1,11 @@
+import request from '@/utils/http'
+<% list.forEach(function(item){ %>
+/**
+ * @description: <%= item.remake %>
+ * @param: {*} data
+ * @return: {*}
+ **/
+export function <%= item.name %>(data) {
+  return request.<%= item.method %>('<%= item.path %>', data)  
+}
+<% }); %>

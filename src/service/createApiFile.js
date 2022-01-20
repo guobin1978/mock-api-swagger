@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const ejs = require('ejs')
 
 const createApiPath = (list, basePath, definitions, filePath) => {
     const apiPath = path.join(filePath, './src/api'); // 文件夹路径
@@ -28,6 +29,7 @@ const createApiPath = (list, basePath, definitions, filePath) => {
 const createApiFunction = (list, basePath, definitions, filePath) => {
     const apiPath = path.join(filePath, './src/api'); // 文件夹路径
     const apiFilePath = path.join(filePath, `./src/api/${basePath}.js`); // 文件路径
+    const apiTemPath = path.join(filePath, `./mock/api.ejs`); // 文件路径
 
     // 判断是否有api文件夹
     if(!fs.existsSync(apiPath)) {
@@ -37,22 +39,26 @@ const createApiFunction = (list, basePath, definitions, filePath) => {
     if(fs.existsSync(apiFilePath)) {
         fs.unlinkSync(apiFilePath);
     }
-    let str = "import request from '@/utils/http'"
-    list.forEach(item => {
-        str += `\n\n/**`;
-        str += `\n * @description: ${ item.remake }`;
-        str += `\n * @param: {*} data`;
-        str += `\n * @return: {*}`;
-        str += `\n **/`;
-        str += `\nexport function ${item.name}(data) {`;
-        str += `\n\treturn request.${item.method}('${item.path}', data)`;
-        str += `\n}`;
+    
+    // let str = "import request from '@/utils/http'"
+    // list.forEach(item => {
+        // str += `\n\n/**`;
+        // str += `\n * @description: ${ item.remake }`;
+        // str += `\n * @param: {*} data`;
+        // str += `\n * @return: {*}`;
+        // str += `\n **/`;
+        // str += `\nexport function ${item.name}(data) {`;
+        // str += `\n\treturn request.${item.method}('${item.path}', data)`;
+        // str += `\n}`;
+    // })
+    
+    ejs.renderFile(apiTemPath, { list }, function(err, data) {
+        try {
+            fs.writeFileSync(apiFilePath, data, { 'flag': 'w' });
+        } catch(e) {
+            console.log(e);
+        }
     })
-    try {
-        fs.writeFileSync(apiFilePath, str, { 'flag': 'w' });
-    } catch(e) {
-        console.log(e);
-    }
 }
 
 module.exports = function(list, basePath, definitions, filePath, type) {

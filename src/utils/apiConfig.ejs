@@ -1,0 +1,17 @@
+module.exports = {
+    urls: { // 生成api
+        'orderManager': 'http://127.0.0.1:5010/orderManager/api.json?group=webapi', // swagger的json地址
+    },
+    proxy: { // 代理设置
+        '/orderManager': { // /orderManager/* 的代理
+            host: '127.0.0.1',
+            port: '5010',
+            children: { // 地址细化代理
+                '/file': { // /orderManager/file/* 的代理
+                    host: '127.0.0.1' ,
+                    port: '5020', 
+                }
+            }
+        }
+    }
+}

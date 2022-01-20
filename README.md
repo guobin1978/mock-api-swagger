@@ -36,11 +36,16 @@ module.exports = {
 }
 
 --data.json // mock数据留存
-```
 
+```
+### 初始化文件
+```
+mas init
+```
 ### 生成api文件
 > src同级目录运行会在src文件夹生成api文件夹
 ```
+mas 先初始化文件
 mas api
 ```
 
