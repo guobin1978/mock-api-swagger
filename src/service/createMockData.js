@@ -33,28 +33,46 @@ router.use('/', async function (req, res) {
         method: req.method,
         headers: req.headers,
         params: req.params,
-        query: req.query,
-        body: req.body,
         json: true
     }
+    console.log(req.headers['content-type'])
     const mock = mockData || {};
+    if(Object.keys(req.query).length > 0) {
+        config.qs = req.query
+    }
+    if(Object.keys(req.body).length > 0) {
+        if(req.headers['content-type'] === 'application/json') {
+            config.body = JSON.stringify(req.body)
+        }
+        if(req.headers['content-type'] === 'application/x-www-form-urlencoded') {
+            config.form = JSON.stringify(req.body)
+        }
+        if(req.headers['content-type'] === 'multipart/form-data') {
+            config.formData = JSON.stringify(req.body)
+        }
+    }
     if(req.query.isMock || req.body.isMock && mock[href]) {
         res.send(mock[href]);
         return;
     }
-    const { body, error } = await ajax({ req, res, config });
-    if(body) {
-        res.send(body);
+    if(req.headers['content-type'] === 'multipart/form-data') {
+        request(url).pipe(req)
+        return
+    }
+    request(config, function(error, response, body) {
+        if(response && response.statusCode === 200) {
+            res.send(body);
         mock[href] = body;
         // 生成mock数据
         fs.writeFileSync(path.join(filePath, './mock/data.json', JSON.stringify(mock, "", "\t"), { 'flag': 'w' }));
-    } else {
-        // 请求失败返回mock数据
+        } else {
+            // 请求失败返回mock数据
         if(mock[href]) {
             res.send(mock[href]);
             return;
         }
         res.send(error); // 无mock数据返回null
-    }
+        }
+    })
 })
 module.exports = router;
