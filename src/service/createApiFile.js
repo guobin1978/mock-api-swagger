@@ -2,9 +2,17 @@ const path = require('path');
 const fs = require('fs');
 const ejs = require('ejs')
 
-const createApiPath = (list, basePath, definitions, filePath) => {
-    const apiPath = path.join(filePath, './src/api'); // 文件夹路径
-    const apiFilePath = path.join(filePath, `./src/api/${basePath}.js`); // 文件路径
+const createApi = (list, basePath, filePath, apiModulePath) => {
+    let apiPath = '';// 文件夹路径
+    if(!apiModulePath) {
+        apiPath = path.join(filePath, '/src', '/api')
+    } else {
+        apiPath = path.join(filePath, apiModulePath)
+    }
+
+    const apiFilePath = path.join(apiPath, `/${basePath}.js`); // 文件路径
+
+    const apiTemPath = path.join(filePath, `./mock/api.ejs`); // 模板文件路径
 
     // 判断是否有api文件夹
     if(!fs.existsSync(apiPath)) {
@@ -14,44 +22,7 @@ const createApiPath = (list, basePath, definitions, filePath) => {
     if(fs.existsSync(apiFilePath)) {
         fs.unlinkSync(apiFilePath);
     }
-    let str = 'module.export = {\n'
-    list.forEach(item => {
-        str += `\t${item.name}: '${item.path}', // ${item.remake}\n`
-    })
-    str += '}'
-    try {
-        fs.writeFileSync(apiFilePath, str, { 'flag': 'w' });
-    } catch(e) {
-        console.log(e);
-    }
-}
 
-const createApiFunction = (list, basePath, definitions, filePath) => {
-    const apiPath = path.join(filePath, './src/api'); // 文件夹路径
-    const apiFilePath = path.join(filePath, `./src/api/${basePath}.js`); // 文件路径
-    const apiTemPath = path.join(filePath, `./mock/api.ejs`); // 文件路径
-
-    // 判断是否有api文件夹
-    if(!fs.existsSync(apiPath)) {
-        fs.mkdirSync(apiPath);
-    }
-    // 判断是否有api模块文件
-    if(fs.existsSync(apiFilePath)) {
-        fs.unlinkSync(apiFilePath);
-    }
-    
-    // let str = "import request from '@/utils/http'"
-    // list.forEach(item => {
-        // str += `\n\n/**`;
-        // str += `\n * @description: ${ item.remake }`;
-        // str += `\n * @param: {*} data`;
-        // str += `\n * @return: {*}`;
-        // str += `\n **/`;
-        // str += `\nexport function ${item.name}(data) {`;
-        // str += `\n\treturn request.${item.method}('${item.path}', data)`;
-        // str += `\n}`;
-    // })
-    
     ejs.renderFile(apiTemPath, { list }, function(err, data) {
         try {
             fs.writeFileSync(apiFilePath, data, { 'flag': 'w' });
@@ -61,10 +32,4 @@ const createApiFunction = (list, basePath, definitions, filePath) => {
     })
 }
 
-module.exports = function(list, basePath, definitions, filePath, type) {
-    if(+type === 1) {
-        createApiPath(list, basePath, definitions, filePath);
-    } else if(+type === 2) {
-        createApiFunction(list, basePath, definitions, filePath);
-    }
-};
+module.exports = createApi;
