@@ -7,7 +7,6 @@ const init = async (filePath) => {
     spinner.color = 'green';
     const mockPath = path.join(filePath, './mock'); // 文件夹路径
     const apiConfigPath = path.join(filePath, './mock/apiConfig.js')
-    const apiPath = path.join(filePath, './src/api'); // 文件夹路径
     const apiTemPath = path.join(filePath, './mock/api.ejs')
     const dataPath = path.join(filePath, './mock/data.json');
     
@@ -19,12 +18,7 @@ const init = async (filePath) => {
 
         // 判断是否有apiConfigPath文件夹
         if(!fs.existsSync(apiConfigPath)) {
-            fs.createReadStream(path.join(__dirname, '../utils/apiConfig.js')).pipe(fs.createWriteStream(apiConfigPath));
-        }
-
-        // 判断是否有api文件夹
-        if(!fs.existsSync(apiPath)) {
-            fs.mkdirSync(apiPath);
+            fs.createReadStream(path.join(__dirname, '../utils/apiConfig.ejs')).pipe(fs.createWriteStream(apiConfigPath));
         }
 
         // 判断是否有api模板文件
