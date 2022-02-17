@@ -32,9 +32,14 @@ const getRouter = (proxy, url, config={}) => {
     return config
 }
 
+let port = process.argv.splice(2)[0]
+if(port === 'undefined') {
+    port = 3456
+}
+
 // proxy 中间件的选择项
 var options = {
-    target: 'http://localhost:3456', // 目标服务器 host
+    target: `http://localhost:${port}`, // 目标服务器 host
     changeOrigin: true,               // 默认false，是否需要改变原始主机头为目标URL
     ws: true,                         // 是否代理websockets
     router: getRouter(apiConfig.proxy),
@@ -46,24 +51,12 @@ var options = {
     },
     selfHandleResponse: true,
     onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
-        const response = responseBuffer.toString('utf8'); // convert buffer to string
-        console.log(response);
+        const response = responseBuffer; // convert buffer to string
         return response; // manipulate response and return the result
       }),
     
 };
 app.use('/', createProxyMiddleware(options))
-// app.use(express.json());
 
-// app.use('/', function(req, res) {
-//     const proxy = apiConfig.proxy;
-//     const isProxy = Object.keys(proxy).some(p => req.url.includes(p));
-//     // 判断url是否走代理
-//     if(isProxy) {
-//         router(req, res);
-//         return;
-//     }
-// })
-
-console.log('mock at http://localhost:3456');
-app.listen(3456);
+console.log(`mock at http://localhost:${port}`);
+app.listen(port);
