@@ -21,7 +21,7 @@ app.all('*', (req, res, next) => {
     next();
 })
 
-const getRouter = (proxy, url, config={}) => {
+const getRouter = (proxy, url='', config={}) => {
     Object.keys(proxy).forEach(p => {
         if(proxy[p].children) {
             getRouter(proxy[p].children, p, config)
