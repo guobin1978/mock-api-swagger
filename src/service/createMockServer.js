@@ -24,7 +24,7 @@ app.all('*', (req, res, next) => {
 const getRouter = (proxy, url, config={}) => {
     Object.keys(proxy).forEach(p => {
         if(proxy[p].children) {
-            getHost(proxy[p].children, p, config)
+            getRouter(proxy[p].children, p, config)
         }
         const { host, port } = proxy[p];
         config[url + p] = `http://${host}:${port}`
@@ -56,7 +56,11 @@ var options = {
       }),
     
 };
-app.use('/', createProxyMiddleware(options))
+
+const list = Object.keys(apiConfig.proxy)
+for(let i = 0; i < list.length; i++) {
+    app.use(list[i], createProxyMiddleware(options))
+}
 
 console.log(`mock at http://localhost:${port}`);
 app.listen(port);

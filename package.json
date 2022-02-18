@@ -1,6 +1,6 @@
 {
   "name": "mock-api-swagger",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -18,6 +18,7 @@
   "author": "青天等不等雨",
   "license": "ISC",
   "dependencies": {
+    "await-to-js": "^3.0.0",
     "chokidar": "^3.5.2",
     "commander": "^8.3.0",
     "ejs": "^3.1.6",
