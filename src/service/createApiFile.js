@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const ejs = require('ejs')
 
-const createApi = (list, basePath, filePath, apiModulePath) => {
+const createApi = (list, baseUrl, filePath, apiModulePath) => {
     let apiPath = '';// 文件夹路径
     if(!apiModulePath) {
         apiPath = path.join(filePath, '/src', '/api')
@@ -10,7 +10,7 @@ const createApi = (list, basePath, filePath, apiModulePath) => {
         apiPath = path.join(filePath, apiModulePath)
     }
 
-    const apiFilePath = path.join(apiPath, `/${basePath}.js`); // 文件路径
+    const apiFilePath = path.join(apiPath, `${baseUrl}.js`); // 文件路径
 
     const apiTemPath = path.join(filePath, `./mock/api.ejs`); // 模板文件路径
 
@@ -23,7 +23,7 @@ const createApi = (list, basePath, filePath, apiModulePath) => {
         fs.unlinkSync(apiFilePath);
     }
 
-    ejs.renderFile(apiTemPath, { list }, function(err, data) {
+    ejs.renderFile(apiTemPath, { baseUrl, list }, function(err, data) {
         try {
             fs.writeFileSync(apiFilePath, data, { 'flag': 'w' });
         } catch(e) {

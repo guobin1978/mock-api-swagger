@@ -37,10 +37,9 @@ const getType = async (filePath, apiModulePath) => {
                 }
             }).then(body => {
                 spinner.succeed(key + '数据拉取成功');
-                const { basePath } = body;
                 if(!data[key]) {
                     data[key] = createApiList(body);
-                    createApiFile(data[key], basePath, filePath, apiModulePath);
+                    createApiFile(data[key], key, filePath, apiModulePath);
                 }
             }).catch(err => {
                 spinner.succeed('数据拉取失败');
@@ -100,7 +99,6 @@ const getType = async (filePath, apiModulePath) => {
                     list = list.concat(data)
                 }
             }
-            console.log(dataObject)
             createApiFile(list, baseUrl, filePath, apiModulePath);
         }
     }
