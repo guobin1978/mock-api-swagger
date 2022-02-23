@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const path = require('path');
 const ora = require('ora');
-const to = require('await-to-js')
+const { to } = require('await-to-js')
 const requestPromise = require('../utils/requestPromise');
 const createApiList = require('../service/createApiList');
 const createApiFile = require('../service/createApiFile');
@@ -47,9 +47,9 @@ const getType = async (filePath, apiModulePath) => {
             })
         })
     } else {
-        let list = []
         const arr = Object.keys(proxy)
         for(let i = 0; i < arr.length; i++) {
+            let list = []
             const baseUrl = arr[i]
             const { host, port } = proxy[baseUrl]
             const url = `http://${host}:${port}/${baseUrl}/api.json?group=webapi`
@@ -70,31 +70,39 @@ const getType = async (filePath, apiModulePath) => {
             list = createApiList(body)
             if(!proxy[baseUrl].children) return
             const children = proxy[baseUrl].children
-            const arr = Object.keys(children)
-            for(let j = 0; j < arr.length; j++) {
-                const routerUrl = arr[j]
+            const arrChildren = Object.keys(children)
+            const dataObject = {}
+            for(let j = 0; j < arrChildren.length; j++) {
+                const routerUrl = arrChildren[j]
                 const { host, port } = children[routerUrl]
                 const url = `http://${host}:${port}/${baseUrl}/api.json?group=webapi`
                 spinner.text = `正在拉取：${routerUrl} -> ${url}`;
-                const body = await to(requestPromise({
-                    url: url,
-                    method: 'get',
-                    json: true,
-                    query: {
-                        group: 'webapi'
+                let body = dataObject[url], err = null
+                if(!body) {
+                    [err, body] = await to(requestPromise({
+                        url: url,
+                        method: 'get',
+                        json: true,
+                        query: {
+                            group: 'webapi'
+                        }
+                    }))
+                    if(body) {
+                        dataObject[url] = body
                     }
-                }))
+                }
                 if(err && !body) {
                     spinner.succeed(`${routerUrl}数据拉取失败`);
-                    return
+                } else {
+                    spinner.succeed(`${routerUrl}数据拉取成功`);
+                    list = list.filter(item => item.routerUrl !== routerUrl)
+                    const data = createApiList(body).filter(item => item.routerUrl === routerUrl)
+                    list = list.concat(data)
                 }
-                spinner.succeed(`${routerUrl}数据拉取成功`);
-                list = list.filter(item => item.routerUrl !== routerUrl)
-                const data = createApiList(body).filter(item => item.routerUrl === routerUrl)
-                list = list.concat(data)
             }
+            console.log(dataObject)
+            createApiFile(list, baseUrl, filePath, apiModulePath);
         }
-        console.log(list)
     }
 }
 module.exports = getType;

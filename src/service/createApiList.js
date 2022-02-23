@@ -27,7 +27,7 @@ const createApiList = (body) => {
             const item = {
                 name: createName(key) + method.slice(0, 1).toUpperCase() + method.slice(1),
                 path: key,
-                routerUrl: key.split('/')[1],
+                routerUrl: '/' + key.split('/')[1],
                 remake: methods[method].summary,
                 parameters: methods[method].parameters,
                 method
