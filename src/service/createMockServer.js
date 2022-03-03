@@ -51,16 +51,18 @@ var options = {
     },
     selfHandleResponse: true,
     onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
+        console.log(req.url)
         const response = responseBuffer; // convert buffer to string
+        let data = response.toString('utf-8')
+        try {
+            data = JSON.parse(data)
+        } catch(e) {}
         return response; // manipulate response and return the result
       }),
     
 };
 
-const list = Object.keys(apiConfig.proxy)
-for(let i = 0; i < list.length; i++) {
-    app.use(list[i], createProxyMiddleware(options))
-}
+app.use('/', createProxyMiddleware(options))
 
 console.log(`mock at http://localhost:${port}`);
 app.listen(port);
