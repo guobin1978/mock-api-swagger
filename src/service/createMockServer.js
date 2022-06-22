@@ -32,7 +32,6 @@ const getMock = (proxy, url='', config={}) => {
             getMock(proxy[p].children, url + p, config)
         }
         const { data, mock } = proxy[p]
-        console.log(p, proxy[p])
         if(data) {
             config[url + p] = { data, mock }
         }
@@ -48,7 +47,7 @@ const optionsRouter = getRouter(apiConfig.proxy)
 console.log(optionsRouter)
 
 const mock = getMock(apiConfig.proxy)
-console.log('mock', mock)
+
 // proxy 中间件的选择项
 var options = {
     target: `http://localhost:${port}`, // 目标服务器 host
