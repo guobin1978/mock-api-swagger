@@ -27,7 +27,7 @@ const init = async (filePath) => {
         }
         
         // 判断是否有data.json
-        if(!fs.existsSync(dataPath)) {
+        if(!fs.existsSync(dataTemPath)) {
             fs.createReadStream(path.join(__dirname, '../template/data.ejs')).pipe(fs.createWriteStream(dataTemPath));
         }
         spinner.succeed('文件初始化成功')

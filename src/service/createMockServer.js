@@ -6,11 +6,6 @@ const { createProxyMiddleware, responseInterceptor } = require('http-proxy-middl
 
 const filePath = process.cwd();
 const apiConfig = require(path.join(filePath, './mock/apiConfig.js'));
-const dataPath = path.join(filePath, './mock/data.json');
-
-if(!fs.existsSync(dataPath)) {
-    fs.writeFileSync(dataPath, '{}', { 'flag': 'w' });
-}
 
 // 设置跨域访问
 app.all('*', (req, res, next) => {
@@ -37,6 +32,7 @@ const getMock = (proxy, url='', config={}) => {
             getMock(proxy[p].children, url + p, config)
         }
         const { data, mock } = proxy[p]
+        console.log(p, proxy[p])
         if(data) {
             config[url + p] = { data, mock }
         }
@@ -52,9 +48,7 @@ const optionsRouter = getRouter(apiConfig.proxy)
 console.log(optionsRouter)
 
 const mock = getMock(apiConfig.proxy)
-
-const proxyMiddleware = createProxyMiddleware(options)
-
+console.log('mock', mock)
 // proxy 中间件的选择项
 var options = {
     target: `http://localhost:${port}`, // 目标服务器 host
@@ -82,9 +76,12 @@ var options = {
     
 }
 
+const proxyMiddleware = createProxyMiddleware(options)
+
 app.use('/', function(...args) {
     const [req, res] = args
     const url = req._parsedUrl.pathname
+    console.log(url)
     if(mock[url] && mock[url].mock) {
         console.log(url, 'mock')
         res.send(mock[url].data)
