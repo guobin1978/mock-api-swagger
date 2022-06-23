@@ -39,6 +39,13 @@ const getMock = (proxy, url='', config={}) => {
     return config
 }
 
+const getClientIp = function (req) {
+    return req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress || ''
+}
+
 let port = process.argv.splice(2)[0]
 if(port === 'undefined') {
     port = 3456
