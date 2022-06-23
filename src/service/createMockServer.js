@@ -61,25 +61,28 @@ var options = {
     changeOrigin: true,               // 默认false，是否需要改变原始主机头为目标URL
     ws: true,                         // 是否代理websockets
     router: optionsRouter,
+    selfHandleResponse: true, // 是否启用自定义回调函数
     onError(err, req, res, target) {
         res.writeHead(500, {
           'Content-Type': 'text/plain',
         });
         res.end(err.toString ? err.toString() : err);
     },
-    selfHandleResponse: true,
     onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
-        const response = responseBuffer; // convert buffer to string
+        const response = responseBuffer
         let data = response.toString('utf-8')
+        let ip, url, code
         try {
             data = JSON.parse(data)
+            code = data ? data.code : null
+            ip = getClientIp(req).match(/\d+.\d+.\d+.\d+/)
+            ip = ip ? ip.join('.') : null
+            const { _parseUrl: { pathname: pathname1 } = {}, _parsedUrl: { pathname: pathname2 } = {} } = req
+            url = pathname1 || pathname2
+            console.log('ip:', ip, 'url:', url, 'status:', res.statusCode, 'code:', code)
         } catch(e) {}
-        let ip = getClientIp(req).match(/\d+.\d+.\d+.\d+/)
-        ip = ip ? ip.join('.') : null
-        console.log(ip, req._parseUrl.pathname, data.code)
-        return response; // manipulate response and return the result
-      }),
-    
+        return response
+    })
 }
 
 const proxyMiddleware = createProxyMiddleware(options)
