@@ -21,7 +21,7 @@ const getRouter = (proxy, url='', config={}) => {
             getRouter(proxy[p].children, url + p, config)
         }
         const { host, port } = proxy[p];
-        config[url + p] = `${host.includes('http') ? host : 'http://' + host}:${port ? ':' + port : ''}`
+        config[url + p] = `${host.includes('http') ? host : 'http://' + host}${port ? ':' + port : ''}`
     })
     return config
 }
@@ -80,7 +80,6 @@ const proxyMiddleware = createProxyMiddleware(options)
 app.use('/', function(...args) {
     const [req, res] = args
     const url = req._parsedUrl.pathname
-    console.log(url)
     if(mock[url] && mock[url].mock) {
         console.log(url, 'mock')
         res.send(mock[url].data)
