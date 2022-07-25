@@ -6,19 +6,21 @@ const createMockServer = path.join(__dirname, '../service/createMockServer.js')
 const mock = (filePath, port) => {
     let subprocess; // 子进程
     // 用户代理设置文件
-    const apiConfig = path.join(process.cwd(), './mock/apiConfig.js');
+    const mock = path.join(process.cwd(), './mock');
+
     // 监听设置文件是否修改
-    const watcher = Chokidar.watch([apiConfig], {
+    const watcher = Chokidar.watch([mock], {
       persistent: true,
       usePolling: true,
     });
     
     watcher
-    .on('ready', () => console.log(`ready`))
-    .on('add', path => { 
+    .on('add', path => {})
+    .on('ready', () => {
+        console.log(`ready`)
         subprocess = execa('node', [createMockServer, port]);
         subprocess.stdout.pipe(process.stdout);
-     })
+    })
     .on('change', path => {
         console.log(`Has been changed, file: ${path}`);
         // 文件有修改重启

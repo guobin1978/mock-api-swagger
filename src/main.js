@@ -13,12 +13,6 @@ Reflect.ownKeys(mapActions).forEach((action)=>{
           console.log(mapActions[action].description); 
       }else{
           // 分解命令 到文件里 有多少文件 就有多少配置 create config
-            // lee-cli create project-name ->[node,lee-cli,create,project-name]
-          const mockPath = path.join(process.cwd(), './mock/'); // 文件夹路径
-
-          if(!fs.existsSync(mockPath)) {
-            fs.mkdirSync(mockPath)
-          }
           require(path.join(__dirname, './actions', action))(process.cwd(), ...process.argv.slice(3));
       }
     })

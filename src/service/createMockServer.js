@@ -2,18 +2,20 @@ const path = require('path');
 const fs = require('fs');
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const { createProxyMiddleware, responseInterceptor } = require('http-proxy-middleware');
+const fileCheck = require('../utils/fileCheck')
+
+if(!fileCheck.hasMock()) {
+    fileCheck.init()
+}
 
 const filePath = process.cwd();
 const apiConfig = require(path.join(filePath, './mock/apiConfig.js'));
+const mockData = require(path.join(filePath, './mock/data.js'));
 
 // 设置跨域访问
-app.all('*', (req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With');
-    res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
-    next();
-})
+app.use(cors())
 
 const getRouter = (proxy, url='', config={}) => {
     Object.keys(proxy).forEach(p => {
@@ -31,9 +33,10 @@ const getMock = (proxy, url='', config={}) => {
         if(proxy[p].children) {
             getMock(proxy[p].children, url + p, config)
         }
-        const { data, mock } = proxy[p]
-        if(data) {
-            config[url + p] = { data, mock }
+        const { mock } = proxy[p]
+        
+        if(mock) {
+            config[url + p] = { mock }
         }
     })
     return config
@@ -92,7 +95,10 @@ app.use('/', function(...args) {
     const url = req._parsedUrl.pathname
     if(mock[url] && mock[url].mock) {
         console.log(url, 'mock')
-        res.send(mock[url].data)
+        if(mockData[url].status) {
+            res.status(mockData[url].status)
+        }
+        res.send(mockData[url].data)
     } else {
         proxyMiddleware(...args)
     }
