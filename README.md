@@ -1,6 +1,6 @@
 # mock-api-swagger
 
-> swagger数据请求转发生成mock及api生成
+> 请求转发使用mock及swagger数据api文件生成
 
 ## Install
 

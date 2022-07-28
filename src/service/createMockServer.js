@@ -11,7 +11,11 @@ if(!fileCheck.hasMock()) {
 }
 
 const filePath = process.cwd();
+
+fileCheck.checkApiConfig()
 const apiConfig = require(path.join(filePath, './mock/apiConfig.js'));
+
+fileCheck.checkData()
 const mockData = require(path.join(filePath, './mock/data.js'));
 
 // 设置跨域访问
