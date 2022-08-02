@@ -1,3 +1,3 @@
-const fileCheck = require('../utils/fileChekc')
+const fileCheck = require('../utils/fileCheck')
 
 module.exports = fileCheck.init
