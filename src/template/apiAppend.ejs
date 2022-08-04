@@ -5,6 +5,6 @@
  * @return: {*}
  **/
 export function <%= item.name %>(data) {
-  return request.<%= item.method %>('<%= item.path %>', data)
+  return request.<%= item.method %>('${<%= baseUrl %>BaseUrl}<%= item.path %>', data)
 }
 <% }) %>
